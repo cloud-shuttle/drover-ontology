@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------
+  # 1. Drover Ontology Force-Directed Visualizer
+  # ----------------------------------------------------
+  visualizer:
+    container_name: drover-ontology-visualizer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST_PROJECT_ROOT=/Users/peterhanssens/consulting/DataEngBytes/dataengbytes.com
+    volumes:
+      # Mount the dataengbytes.com .ontology directory to target folder
+      # so changes made by dev commit or RLM loops are instantly visualizable
+      - /Users/peterhanssens/consulting/DataEngBytes/dataengbytes.com/.ontology:/app/target
+    restart: unless-stopped
+
+  # ----------------------------------------------------
+  # 2. DataEngBytes Next.js Web Application
+  # ----------------------------------------------------
+  web:
+    container_name: dataengbytes-web
+    build:
+      context: /Users/peterhanssens/consulting/DataEngBytes/dataengbytes.com
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      # Observability Gateway & Tracing settings
+      - NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY=pk-lf-a163c801-f761-430b-ab9e-dfd85fd838a4
+      - LANGFUSE_SECRET_KEY=sk-lf-539105a8-2bb0-46dd-8236-5db9abb2de55
+      - LANGFUSE_HOST=http://langfuse:3000
+      - BIFROST_GATEWAY_URL=http://bifrost:8080/v1
+      - no_proxy=localhost,127.0.0.1,langfuse,langfuse-server,langfuse-db,visualizer,web,bifrost,bifrost-gateway,192.168.97.0/24
+      - NO_PROXY=localhost,127.0.0.1,langfuse,langfuse-server,langfuse-db,visualizer,web,bifrost,bifrost-gateway,192.168.97.0/24
+    depends_on:
+      - langfuse
+      - bifrost
+    restart: unless-stopped
+
+  # ----------------------------------------------------
+  # 3. Langfuse Observability & Evals Database (Postgres)
+  # ----------------------------------------------------
+  langfuse-db:
+    image: postgres:15-alpine
+    container_name: langfuse-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=langfuse
+    ports:
+      - "5432:5432"
+    volumes:
+      - langfuse-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # ----------------------------------------------------
+  # 4. Langfuse Self-Hosted Analytics & Evals Server
+  # ----------------------------------------------------
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: langfuse-server
+    depends_on:
+      - langfuse-db
+    ports:
+      - "4000:3000" # Expose Langfuse on 4000 to avoid conflicting with Next.js on 3000
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@langfuse-db:5432/langfuse
+      - NEXTAUTH_SECRET=my-super-secret-auth-key-123456
+      - NEXTAUTH_URL=http://localhost:4000
+      - SALT=my-super-strong-salt-string-minimum-32-chars-long
+      - LANGFUSE_INIT_ORGANIZATION_NAME="DataEngBytes Dev"
+      - LANGFUSE_INIT_PROJECT_NAME="Drover Refactoring Pipeline"
+      - LANGFUSE_INIT_PROJECT_PUBLIC_KEY=pk-lf-a163c801-f761-430b-ab9e-dfd85fd838a4
+      - LANGFUSE_INIT_PROJECT_SECRET_KEY=sk-lf-539105a8-2bb0-46dd-8236-5db9abb2de55
+    restart: unless-stopped
+
+  # ----------------------------------------------------
+  # 5. Bifrost AI Gateway / Proxy
+  # ----------------------------------------------------
+  bifrost:
+    image: maximhq/bifrost:latest
+    container_name: bifrost-gateway
+    ports:
+      - "5005:8080" # Expose Bifrost on port 5005 to avoid macOS AirPlay port 5000 conflicts
+    environment:
+      - no_proxy=localhost,127.0.0.1,langfuse,langfuse-server,langfuse-db,visualizer,web,bifrost,bifrost-gateway,192.168.97.0/24
+      - NO_PROXY=localhost,127.0.0.1,langfuse,langfuse-server,langfuse-db,visualizer,web,bifrost,bifrost-gateway,192.168.97.0/24
+    volumes:
+      - bifrost-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  langfuse-db-data:
+  bifrost-data:

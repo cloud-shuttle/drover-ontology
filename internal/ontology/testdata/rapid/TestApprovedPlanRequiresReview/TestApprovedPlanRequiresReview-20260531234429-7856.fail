@@ -1,0 +1,93 @@
+# 2026/05/31 23:44:29.731562 [TestApprovedPlanRequiresReview] [rapid] draw numPlans: 1
+# 2026/05/31 23:44:29.731570 [TestApprovedPlanRequiresReview] [rapid] draw numReviews: 2
+# 2026/05/31 23:44:29.731571 [TestApprovedPlanRequiresReview] [rapid] draw pid: "AAA"
+# 2026/05/31 23:44:29.731573 [TestApprovedPlanRequiresReview] [rapid] draw title: "AAA"
+# 2026/05/31 23:44:29.732085 [TestApprovedPlanRequiresReview] [rapid] draw rid: "AAA"
+# 2026/05/31 23:44:29.732086 [TestApprovedPlanRequiresReview] [rapid] draw decision: "go"
+# 2026/05/31 23:44:29.732485 [TestApprovedPlanRequiresReview] [rapid] draw rid: "AAA"
+# 2026/05/31 23:44:29.732488 [TestApprovedPlanRequiresReview] [rapid] draw decision: "go"
+# 2026/05/31 23:44:29.732771 [TestApprovedPlanRequiresReview] [rapid] draw numApprovals: 1
+# 2026/05/31 23:44:29.732774 [TestApprovedPlanRequiresReview] [rapid] draw ridx: 0
+# 2026/05/31 23:44:29.732774 [TestApprovedPlanRequiresReview] [rapid] draw pidx: 0
+# 2026/05/31 23:44:29.733021 [TestApprovedPlanRequiresReview] [rapid] draw numToApprove: 1
+# 2026/05/31 23:44:29.733022 [TestApprovedPlanRequiresReview] [rapid] draw pidx: 0
+# 2026/05/31 23:44:29.733253 [TestApprovedPlanRequiresReview] Plan plan_0_AAA has an approving Review but Validate reported a violation: [Plan plan_0_AAA is 'approved' but has no approving Review]
+# 
+v0.4.8#762996870575620921
+0x0
+0x0
+0x0
+0x0
+0x38e38e38e38e4
+0x2
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x1
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x1
+0x0
+0x0
+0x0

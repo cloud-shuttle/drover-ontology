@@ -1,0 +1,167 @@
+# Core portable ontology schema (shared with upstream ClawHub ontology skill)
+# Do not edit lightly — changes here affect many agents.
+#
+# Purpose: context graph + knowledge base for ANY domain — not ticket tracking.
+# Work items (Task, optional workflow types) are one layer on top of people,
+# organizations, documents, concepts, events, and goals.
+
+types:
+  Person:
+    required: [name]
+    optional: [email, phone, role, notes, github, linear, expertise, affiliation]
+
+  Organization:
+    required: [name]
+    optional: [kind, website, notes]
+    kind_enum: [client, partner, community, employer, vendor, conference, association]
+
+  Project:
+    required: [name]
+    optional: [status, goals, owner, start_date, target_date, kind, summary]
+    kind_enum: [product, consulting, workshop_series, conference, course, migration, research, internal]
+    status_enum: [planned, active, paused, completed, archived]
+
+  Task:
+    required: [title, status]
+    status_enum: [open, in_progress, blocked, done, abandoned]
+
+  Goal:
+    required: [description]
+    optional: [metric, target_date, status]
+
+  Event:
+    required: [title, start]
+    optional: [end, location, attendees, recurrence, kind, format, capacity]
+    kind_enum: [talk, workshop, conference, meetup, office_hours, rehearsal, deadline]
+
+  Location:
+    required: [name]
+    optional: [address, city, country, virtual_url]
+
+  Document:
+    required: [title]
+    optional: [path, url, summary, hash, kind, format]
+    kind_enum: [article, slide_deck, runbook, contract, brief, transcript, adr, curriculum]
+
+  Note:
+    required: [content]
+    optional: [tags, refs, source, confidence]
+
+  Message:
+    required: [content]
+    optional: [channel, author, timestamp, thread_ref]
+
+  Thread:
+    required: [title]
+    optional: [channel, participants, summary]
+
+  Concept:
+    required: [label]
+    optional: [definition, domain, aliases, maturity]
+    maturity_enum: [emerging, established, deprecated]
+
+  Taxonomy:
+    required: [name]
+    optional: [root_term, scheme, description]
+
+  Term:
+    required: [label, definition]
+    optional: [domain, status, aliases]
+    status_enum: [proposed, accepted, deprecated, alias]
+
+  Action:
+    required: [type, timestamp]
+    optional: [actor, summary]
+    description: "Causal log entry — what an agent or human did"
+
+  Policy:
+    required: [name, rule]
+    optional: [scope, severity]
+
+relations:
+  has_owner:
+    from_types: [Project, Task, Plan, Bead, Document, Event]
+    to_types: [Person]
+    cardinality: many_to_one
+
+  depends_on:
+    from_types: [Task, Bead, Plan, Goal, Event]
+    to_types: [Task, Bead, Plan, Goal, Event]
+    acyclic: true
+
+  blocks:
+    from_types: [Task, Bead]
+    to_types: [Task, Bead]
+    acyclic: true
+
+  contains:
+    from_types: [Project, Plan, Event, Document, Organization, Taxonomy]
+    to_types: [Task, Bead, Document, Note, Event, Concept, Term, Goal]
+
+  owns:
+    from_types: [Person, Organization]
+    to_types: [Project, Plan, Document, Event]
+
+  part_of:
+    from_types: [Event, Document, Task, Project, Note]
+    to_types: [Project, Event, Organization, Taxonomy]
+    description: "Structural membership — session in series, module in curriculum"
+
+  member_of:
+    from_types: [Person]
+    to_types: [Organization, Event, Project]
+    cardinality: many_to_many
+
+  references:
+    from_types: [Document, Note, Plan, Message, Event]
+    to_types: [Document, Concept, Term, Person, Organization, Project, Goal]
+    description: "Citation or explicit pointer to another entity"
+
+  covers:
+    from_types: [Document, Event, Plan, Note, Project]
+    to_types: [Concept, Term, Goal]
+    description: "Content or session addresses this topic or outcome"
+
+  related_to:
+    from_types: [Concept, Term, Document, Note, Person, Organization, Project, Event]
+    to_types: [Concept, Term, Document, Note, Person, Organization, Project, Event]
+    description: "Associative link for knowledge navigation (symmetric in practice)"
+
+  serves:
+    from_types: [Organization, Project, Person]
+    to_types: [Organization, Person]
+    description: "Consulting / delivery relationship — who you work for"
+
+  teaches:
+    from_types: [Event, Document, Person]
+    to_types: [Concept, Term, Goal]
+    description: "Pedagogical link — talk or material teaches a topic"
+
+  # --- Taxonomy & knowledge hierarchy relations (see references/taxonomy-relations.md) ---
+
+  broader_term:
+    from_types: [Term, Concept]
+    to_types: [Term, Concept]
+    acyclic: true
+    description: "Hierarchical parent: A is narrower / a more specific kind of B. Primary relation for building drover-org concept taxonomies. E.g. 'Drover Code' broader_term 'Platform'."
+
+  narrower_term:
+    from_types: [Term, Concept]
+    to_types: [Term, Concept]
+    acyclic: true
+    description: "Explicit inverse of broader_term (optional but recommended for downward navigation queries)."
+
+  tagged_with:
+    from_types: [Term, Concept, Document, Note, Bead, Plan, Review, Event]
+    to_types: [Term, Concept]
+    description: "Cross-cutting classification / facet tagging. Preferred replacement for ad-hoc 'domain' relations or free string tags. E.g. a Bead or ADR tagged_with 'ASDL C' or 'governance-policy'."
+
+  in_domain:
+    from_types: [Term, Concept]
+    to_types: [Term]
+    description: "Scoping a Term or Concept into a domain root Term (e.g. 'governance', 'platform', 'asdlc'). Cleaner than the early ad-hoc 'domain' relation usage."
+
+  governed_by:
+    from_types: [Term]
+    to_types: [Person, Review, Policy]
+    description: "Records accountability and acceptance process for a Term. Supports the Term acceptance policy: status=accepted should be backed by a governed_by link (or linked Review)."

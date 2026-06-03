@@ -1,0 +1,15 @@
+# drover-ontology
+.ontology/
+*.pyc
+__pycache__/
+.DS_Store
+.env
+*.log
+
+# Built binaries and temporary caches
+/bin/
+/ontology
+/rlm-ontology
+/.gstack/
+node_modules/
+

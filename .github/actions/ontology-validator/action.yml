@@ -1,0 +1,62 @@
+name: 'Drover Ontology Validator'
+description: 'Validates a Drover Ontology schema, constraints, and fsck replay integrity.'
+inputs:
+  graph-path:
+    description: 'Path to graph.jsonl'
+    required: false
+    default: '.ontology/graph.jsonl'
+  db-path:
+    description: 'Path to graph.db'
+    required: false
+    default: '.ontology/graph.db'
+  schema-path:
+    description: 'Path to schema.yaml'
+    required: false
+    default: '.ontology/schema.yaml'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Drover Ontology CLI
+      shell: bash
+      run: |
+        echo "==> Installing drover-ontology tool..."
+        mkdir -p $HOME/.local/bin
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        
+        # If we have the source code available locally in the workspace, compile it directly
+        if [ -d "../drover-ontology" ]; then
+          echo "Found local drover-ontology source in parent directory. Building..."
+          cd ../drover-ontology && go build -o $HOME/.local/bin/ontology github.com/drover-org/drover-ontology/cmd/ontology
+        elif [ -f "go.mod" ] && grep -q "drover-ontology" go.mod; then
+          echo "Found local drover-ontology source in current directory. Building..."
+          go build -o $HOME/.local/bin/ontology github.com/drover-org/drover-ontology/cmd/ontology
+        else
+          echo "Downloading and installing drover-ontology CLI..."
+          go install github.com/drover-org/drover-ontology/cmd/ontology@latest
+        fi
+
+    - name: Run Schema Validation
+      shell: bash
+      run: |
+        echo "==> Running ontology validate..."
+        set -o pipefail
+        
+        # Ensure the .ontology output directory exists
+        mkdir -p $(dirname "${{ inputs.graph-path }}")
+        
+        ontology validate --graph "${{ inputs.graph-path }}" --db "${{ inputs.db-path }}" 2>&1 | tee validate_out.txt || {
+          echo "::error title=Validation Failed::Ontology schema or domain constraint violations detected!"
+          # Process lines for inline annotations
+          while IFS= read -r line; do
+            if [[ $line == *"VIOLATION"* ]] || [[ $line == *"error"* ]] || [[ $line == *"invalid"* ]]; then
+              echo "::warning::$line"
+            fi
+          done < validate_out.txt
+          exit 1
+        }
+
+    - name: Run FSCK Replay Verification
+      shell: bash
+      run: |
+        echo "==> Running ontology fsck..."
+        ontology fsck --graph "${{ inputs.graph-path }}" --db "${{ inputs.db-path }}"

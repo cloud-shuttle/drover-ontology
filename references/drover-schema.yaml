@@ -1,0 +1,111 @@
+# Workflow ontology schema extensions (optional delivery layer)
+# Augments references/core-schema.yaml. Use for plans, reviews, beads, tickets — not for KB-first setups.
+
+types:
+  Bead:
+    required: [title, kind, status]
+    kind_enum: [task, spike, fix, doc, review, infra, research]
+    status_enum: [open, in_progress, blocked, done, abandoned]
+    properties:
+      estimate:
+        type: number
+        unit: "hours or points"
+
+  Ticket:
+    required: [key, title, status]
+    status_enum: [open, in_progress, done, canceled, backlog]
+    source_enum: [linear, github, jira, manual]
+
+  Plan:
+    required: [kind, title, status]
+    kind_enum: [ceo, eng, design, devex, asdlc, security, dx, workshop]
+    status_enum: [draft, in_review, approved, executing, landed, archived, rejected]
+
+  Review:
+    required: [kind, decision, reviewer]
+    kind_enum: [ceo, eng, design, dx, asdlc, security, pre_landing]
+    decision_enum: [go, iterate, block, defer, conditional_go]
+    properties:
+      score:
+        type: number
+        min: 0
+        max: 10
+
+  Term:
+    required: [label, definition, status]
+    status_enum: [proposed, accepted, deprecated, alias]
+    properties:
+      domain: string   # e.g. "asdlc", "product", "infra", "ux"
+
+  Change:
+    required: [title, status]
+    status_enum: [open, merged, closed, draft]
+
+relations:
+  implements:
+    from_types: [Bead, Ticket, Change]
+    to_types: [Plan, Goal, Ticket]
+    cardinality: many_to_many
+    description: "This work item is part of delivering the target"
+
+  tracks:
+    from_types: [Ticket]
+    to_types: [Bead, Task]
+    cardinality: one_to_many
+
+  reviewed_by:
+    from_types: [Plan, Bead, Change]
+    to_types: [Review]
+    cardinality: many_to_many
+
+  approves:
+    from_types: [Review]
+    to_types: [Plan, Bead]
+    cardinality: many_to_many
+
+  depends_on:
+    from_types: [Bead, Task, Plan, Ticket]
+    to_types: [Bead, Task, Plan, Ticket]
+    acyclic: true
+
+  blocks:
+    from_types: [Bead, Task]
+    to_types: [Bead, Task]
+    acyclic: true
+
+  owns:
+    from_types: [Person, Organization]
+    to_types: [Project, Plan, Bead, Ticket]
+    cardinality: many_to_many
+
+  has_owner:
+    from_types: [Project, Plan, Bead, Task, Ticket]
+    to_types: [Person]
+    cardinality: many_to_one
+
+  # Taxonomy relations (duplicated here for standalone use of drover-schema; prefer core-schema.yaml + merge in practice)
+  broader_term:
+    from_types: [Term]
+    to_types: [Term]
+    acyclic: true
+    description: "Hierarchical taxonomy parent (see references/taxonomy-relations.md)"
+
+  tagged_with:
+    from_types: [Term, Bead, Plan, Document, Review, Person]
+    to_types: [Term]
+    description: "Cross-cutting tags using governed Term entities"
+
+  governed_by:
+    from_types: [Term]
+    to_types: [Person, Review]
+    description: "Governance / acceptance trail for Terms"
+
+policies:
+  - "A Plan with status=approved MUST have at least one Review with decision in [go, conditional_go]"
+  - "Bead.kind=review implies existence of a linked Review entity"
+
+  # --- Simple Term Governance ---
+  # Propose: Anyone may create Terms with status="proposed" (via drover-ont or PRs to taxonomy.yaml).
+  # Accept: Only designated curators (initially Peter Hanssens) may set status="accepted",
+  #         and only after adding a "governed_by" link to themselves (or a Review/Policy).
+  # See drover-ontology/references/taxonomy-relations.md for the full process and CLI recipes.

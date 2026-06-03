@@ -1,0 +1,206 @@
+{
+  "schema": "drover-beads/v1",
+  "project": "drover-ontology",
+  "updated": "2026-06-04",
+  "beads": [
+    {
+      "id": "bea_ont_001",
+      "title": "Audit and fix all silent DB write errors in hybridStorage",
+      "description": "Replace every `_, _ = db.Exec(...)` pattern in storage.go with proper error handling and wrapped errors. Ensure all mutations in Apply() and StoreEmbedding() return meaningful errors on failure.",
+      "type": "task",
+      "status": "done",
+      "priority": "critical",
+      "phase": "0",
+      "acceptance_criteria": [
+        "All `_, _ =` patterns removed from hybridStorage.Apply() and StoreEmbedding()",
+        "Every SQLite write now returns a descriptive error on failure",
+        "Errors are wrapped with context (e.g. 'failed to persist create to SQLite')",
+        "Existing tests still pass",
+        "Legacy Graph.Apply() has the same treatment (or is clearly marked legacy)",
+        "Best-effort policy for SQLite documented in code comments and OPERATIONS.md",
+        "No silent data loss on normal failure modes (JSONL always durable)"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-06-03",
+      "progress_notes": "All silent _ , _ = db.Exec patterns removed from hybridStorage. Errors now returned and wrapped. Policy (JSONL hard, SQLite best-effort + warning) implemented and documented. Verified in phase 0 work + tests. Legacy paths cleaned during refactors."
+    },
+    {
+      "id": "bea_ont_002",
+      "title": "Complete applyToMemory parity with Log.LoadAll + robust invalidate",
+      "description": "Extend Ontology.applyToMemory() to handle all operations that Log.LoadAll() supports (relate, unrelate, invalidate, tombstone) so the in-memory view stays consistent with the source of truth. Also make invalidate handling robust across storage, memory, and (critically) pure log replay.",
+      "type": "task",
+      "status": "done",
+      "priority": "critical",
+      "phase": "0",
+      "acceptance_criteria": [
+        "applyToMemory handles 'relate' operation correctly",
+        "applyToMemory handles 'unrelate' operation correctly",
+        "applyToMemory handles 'invalidate' operation correctly (with timestamp parsing)",
+        "applyToMemory handles 'tombstone' operation correctly",
+        "'invalidate' case added to log.LoadAll() for full replay fidelity",
+        "Create paths respect initial ValidUntil on Entity (storage + legacy Graph)",
+        "The Log Replay Equivalence property test still passes (and now exercises invalidate end-to-end)",
+        "Dedicated unit tests added covering: invalidate after create, before create, multiple invalidates, bad timestamps, and replay roundtrips"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-05-30"
+    },
+    {
+      "id": "bea_ont_003",
+      "title": "Harden Log Replay Equivalence property test",
+      "description": "Improve the existing TestLogReplayEquivalence rapid test so it runs reliably at scale and catches real consistency bugs between Apply + restart vs pure log replay.",
+      "type": "task",
+      "status": "done",
+      "priority": "high",
+      "phase": "0",
+      "acceptance_criteria": [
+        "Test runs 5,000+ cases without flakiness in CI",
+        "Better generators that produce more realistic operation sequences",
+        "Clear failure messages when states diverge",
+        "Documented comparison logic (what fields are compared)",
+        "Integrated into `make test-generative`"
+      ],
+      "progress_notes": "Hardened TestLogReplayEquivalence using rapid. Check runs with stateful generators tracking created IDs. Comprehensive diagnostics and explicit comparison logic added. Integrated into make test-generative.",
+      "created": "2026-05-30",
+      "updated": "2026-06-02"
+    },
+    {
+      "id": "bea_ont_004",
+      "title": "Add basic startup integrity / fsck check",
+      "description": "On Ontology creation (or via a new `ontology fsck` command), optionally verify that the current SQLite state is consistent with replaying the JSONL log.",
+      "type": "task",
+      "status": "done",
+      "priority": "high",
+      "phase": "0",
+      "acceptance_criteria": [
+        "New `fsck` or `integrity` method on Ontology (or hybridStorage)",
+        "Lightweight check that can run on startup or on demand",
+        "Clear error when log replay and current state diverge",
+        "Exposed as `ontology fsck` CLI command",
+        "Documented in BUILD.md or new operations guide",
+        "Config.CheckIntegrityOnOpen wires IntegrityCheck on New()",
+        "CheckAndRecover auto-fixes SQLite vs log_offset mismatch on open",
+        "fsck command runs full replay parity + policy validation via IntegrityCheck"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-06-03",
+      "progress_notes": "Implemented: IntegrityCheck on Ontology (replay via storage.Replay + validator.ValidateFull on replayed state). CheckIntegrityOnOpen in ctor. CheckAndRecover in storage for offset mismatch. `ontology fsck` CLI + --check-invalidate. Full policy checks (governed_by, Plan review, acyclicity) in replayed state. Documented in OPERATIONS.md. Matches the original intent + more (full policies)."
+    },
+    {
+      "id": "bea_ont_005",
+      "title": "Decide and document failure policy for SQLite write errors",
+      "description": "After fixing silent errors, decide the official policy (fail fast vs best-effort + structured logging) and document it.",
+      "type": "task",
+      "status": "done",
+      "priority": "high",
+      "phase": "0",
+      "acceptance_criteria": [
+        "Clear decision documented in PATH_TO_PRODUCTION.md or a new ADR",
+        "Consistent behavior implemented across Apply paths",
+        "Structured logging (or at least error returns) when writes fail",
+        "Metrics or events emitted for failed mutations (if chosen)"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-05-30"
+    },
+    {
+      "id": "bea_ont_006",
+      "title": "Mature Phase 1 PBT properties (Acyclicity + Policies)",
+      "description": "Implement the next two high-value property tests from TESTING_STRATEGY.md: acyclicity soundness and Drover policy enforcement.",
+      "type": "task",
+      "status": "done",
+      "priority": "high",
+      "phase": "1",
+      "acceptance_criteria": [
+        "Rapid property test for createsCycle soundness exists and passes 1000+ cases",
+        "Rapid property test for 'approved Plan requires Review' policy",
+        "Generators for graphs and relations are reusable",
+        "Tests are fast enough to run in normal `make test`"
+      ],
+      "progress_notes": "Property 2.1 (Acyclicity) completed earlier. Property 3.1 (Approved Plan Requires Review) added as rapid PBT in validate_properties_test.go exercising NewTestOntology + Apply sequences + the shared validateApprovedPlanRequiresReview policy. All validation properties now exercise real policy code.",
+      "created": "2026-05-30",
+      "updated": "2026-06-02"
+    },
+    {
+      "id": "bea_ont_007",
+      "title": "Implement `delete` command with proper semantics",
+      "description": "Replace the current stub `delete` command with real behavior using invalidate + tombstone.",
+      "type": "task",
+      "status": "done",
+      "priority": "medium",
+      "phase": "2",
+      "acceptance_criteria": [
+        "`ontology delete <id>` works and creates appropriate Operation(s)",
+        "Deleted entities no longer appear in list/get/search by default",
+        "History of the deletion is preserved in the log",
+        "Clear help text and error messages",
+        "Basic test coverage using NewTestOntology"
+      ],
+      "progress_notes": "Implemented using tombstone (for audit/history in JSONL) + invalidate (for visibility). Updated list/get/HybridSearch to use new IsDeleted() helper. Added E2E test exercising the binary + direct NewTestOntology test for semantics. Help text is detailed. All criteria met.",
+      "created": "2026-05-30",
+      "updated": "2026-06-01"
+    },
+    {
+      "id": "bea_ont_008",
+      "title": "Produce first version of Production Operations Guide",
+      "description": "Write a practical guide covering backup, restore, recovery from corruption, and migration for the hybrid store.",
+      "type": "task",
+      "status": "done",
+      "priority": "medium",
+      "phase": "2",
+      "acceptance_criteria": [
+        "New file docs/OPERATIONS.md or section in BUILD.md",
+        "Covers at minimum: backup strategy, restore process, what to do on corruption",
+        "Includes commands for common recovery scenarios",
+        "Reviewed for accuracy against current storage code"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-06-04",
+      "progress_notes": "First cut existed early. Substantially expanded after architecture refactors (01-05) and RLM work (bea_ont_010): detailed backup/restore (tar, verification, retention), fsck error interpretation + concrete recovery playbooks (count mismatch, policy violations, drift, corrupt lines), CheckAndRecover flows, RLM ingestion ops (safe sandboxed runs, snapshot promotion, human gates, delta; outputs organized under ./.ontology/ per thread), CI/job patterns (nightly fsck + RLM delta sketches), monitoring (warnings, health), security (perms, multi-writer coordination, sensitivity), performance notes (replay tradeoffs), migration playbooks. Fully aligned with storage.go (CheckAndRecover, writeToSQLite, Load fidelity), commands/fsck.go + validate.go, reducer.go, ontology.go IntegrityCheck/Validate. All original acceptance criteria met and exceeded. Marked complete 2026-06-03 (06-04 RLM folder/process polish in OPERATIONS + beads)."
+    },
+    {
+      "id": "bea_ont_009",
+      "title": "Reach 60%+ test coverage on internal/ontology with meaningful tests",
+      "description": "Increase test coverage on the core package to at least 60% using a combination of unit tests and the new generative tests.",
+      "type": "task",
+      "status": "done",
+      "priority": "high",
+      "phase": "1",
+      "acceptance_criteria": [
+        "`go test -cover ./internal/ontology` reports \u226560%",
+        "New tests actually exercise critical paths (Apply, validation, search)",
+        "Coverage report is clean (no obvious untested happy paths)",
+        "Added to CI"
+      ],
+      "created": "2026-05-30",
+      "updated": "2026-06-03",
+      "progress_notes": "Reached 66%+ statement coverage (as of 2026-06-03 runs). High-level API tests (TestHighLevelCommandAPI), replay properties, governance, invalidate roundtrips, E2E CLI (real binary), fuzz, rapid PBT all added. Critical paths (reducer, Apply, Validate/IntegrityCheck with policies, temporal IsDeleted, HybridSearch) exercised. make test-generative and CI wired per TESTING_STRATEGY. Coverage exceeds target."
+    },
+    {
+      "id": "bea_ont_010",
+      "title": "RLM integration: recursive long-context codebase ingestion into governed drover store",
+      "description": "Position Recursive Language Models (RLM) as a powerful ingestion/builder layer that feeds the existing drover-ontology (high-level CreateEntity/Relate API or the real binary) rather than creating any parallel graph. Deliver strong drover-aware Go loader, go/ast code analysis helpers, DroverClient (direct + exec modes that obey the 'use the Go binary' CRITICAL RULE), the battle-tested RLM system prompt with full drover vocabulary + governance policies, docs/rlm-integration.md + rlm-system-prompt.md, and a runnable tools/rlm-ontology spike. No new embedded graph DBs.",
+      "type": "spike",
+      "status": "done",
+      "priority": "high",
+      "phase": "2",
+      "acceptance_criteria": [
+        "internal/ingest/loader.go + code_analysis.go + drover_client.go compile and are exercised by the spike",
+        "tools/rlm-ontology/main.go runs cleanly (go run ./tools/rlm-ontology .) and performs Create/Relate/Validate/Fsck via the real paths",
+        "docs/rlm-integration.md explains the full 'point at existing codebase' process (loader, REPL symbols, recursive steps, termination) and why RLM targets (not replaces) drover; includes architecture diagram and production recommendations",
+        "docs/rlm-system-prompt.md contains the adapted expert prompt with Term governance, Plan/Review policies, drover relations, recommended entity/rel types, 6-phase workflow, and FINAL_ONTOLOGY exit",
+        "beads.json updated; no parallel graph introduced; all writes still flow through OperationReducer + JSONL + schema seam (high-level API or real binary exec only)",
+        "Spike demonstrates both direct (in-process high-level Ontology methods) and -force-exec modes (obeys CRITICAL RULE)",
+        "Loader is drover-aware: skips .git/vendor/bin/testdata/fuzz/graph.db/snapshots, prioritizes go.mod/beads.json/CONTEXT.md/references/schemas/graph.jsonl, uses === FILE: headers, truncation",
+        "CodeAnalysis provides ListFiles/GetFileContent/ParseGoFile (real go/ast for Struct/Interface/Func/Method), FindReferences, LoadBeadsJSON, RecommendedDroverRelations/ListDroverEntityTypes",
+        "DroverClient provides Create/Relate/Update/SoftDelete/Validate/IntegrityCheck/Stats/Snapshot + AsMap() for Yaegi/rlm-go injection; supports ForceExec + explicit binary",
+        "No new external deps (rlm-go/yaegi/kektordb etc. not added); spike is self-contained emulation of RLM REPL code style",
+        "End-to-end verification: builds, relevant tests pass, spike succeeds in both modes producing governed entities/relations + snapshots + clean fsck output",
+        "All RLM outputs (drover graph + session artifacts) organized under ./.ontology/ (graph.jsonl + graph.db + rlm-runs/<ts>/{rlm-session.log, metadata.json} + snapshots/); no scattered root files; process implements kick-off + root-LLM + Yaegi-exec + recursive sub-Query calls until FINAL_ONTOLOGY"
+      ],
+      "created": "2026-06-03",
+      "updated": "2026-06-04",
+      "progress_notes": "Full implementation landed (real + emulation): drover-aware loader+code_analysis (go/ast), DroverClient (direct high-level API or exec of real binary for CRITICAL RULE), battle-tested system prompt (drover vocab + governance + 6-phase workflow + FINAL_ONTOLOGY), docs/rlm-*.md (full process + architecture), tools/rlm-ontology/ spikes. Real mode: -tags rlm wires github.com/XiaoConstantine/rlm-go (Yaegi REPL) + minimal harness loop using its parsing pkg; custom Yaegi symbol injection for Drover*/analysis helpers + sub-Query() for true recursive LLM calls from inside executed model code. Kick-off once: root LLM (short prompt + history) emits Go code -> Yaegi exec (mutates live drover store) -> results fed back -> sub-Query recursion possible -> loop until model emits FINAL_ONTOLOGY(...) (detected via parser) or max iters (typically 8-20+ turns for non-trivial codebases). No parallel graph DB (Ladybug/Kuzu/Kektor rejected; all writes through drover's OperationReducer + JSONL source-of-truth + schema/policies/fsck). Organized outputs under ./.ontology/ (per user request in RLM thread): graph.jsonl + graph.db (drover persistent hybrid store), snapshots/, rlm-runs/<ts>/{rlm-session.log (full LLM history+code), metadata.json (iters, final, target, note on drover fidelity)}. Emulation (no tag) also defaults to ./.ontology/ paths via flags. Verified: both modes build/run cleanly, produce governed entities/relations via real drover paths + clean fsck, multi-iter demo with progressive helper use + FINAL, sub-Query registered for recursion. README + docs updated. bea_ont_010 complete. (Adapted standalone RLM research thread ideas to drover-native architecture; no LadybugDB or scattered root files.)"
+    }
+  ]
+}

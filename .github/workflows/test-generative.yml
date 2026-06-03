@@ -1,0 +1,82 @@
+name: Generative Tests (Fuzz + PBT)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_deep_replay:
+        description: 'Run the long LogReplayEquivalence test'
+        required: false
+        default: 'false'
+        type: boolean
+  schedule:
+    # Weekly deep run on Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+
+jobs:
+  generative:
+    name: Bounded Generative Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache: true
+
+      - name: Run bounded generative tests
+        run: make test-generative
+        env:
+          # Keep runs reasonable in CI
+          RAPID_CHECKS: 500
+
+      - name: Archive rapid failure files (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapid-failfiles-${{ github.run_id }}
+          path: |
+            testdata/rapid/
+            *.fail
+          retention-days: 14
+          if-no-files-found: ignore
+
+  deep-replay:
+    name: Deep Replay Property Verification
+    runs-on: ubuntu-latest
+    # Only run on manual trigger when requested, or on schedule
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_deep_replay == 'true')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache: true
+
+      - name: Run deep LogReplayEquivalence
+        run: make test-replay-long
+        env:
+          RAPID_CHECKS: 8000
+        timeout-minutes: 30
+
+      - name: Archive rapid failure files (always, for debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapid-deep-failfiles-${{ github.run_id }}
+          path: |
+            testdata/rapid/
+            *.fail
+          retention-days: 30
+          if-no-files-found: ignore
+
+# Notes:
+# - Bounded generative tests run on every manual dispatch and weekly schedule.
+# - Deep replay (8k+ cases) is expensive — only run manually when needed or on schedule.
+# - Failures from rapid will be uploaded as artifacts for reproduction.
+# - See docs/TESTING_STRATEGY.md for more context on these targets.
