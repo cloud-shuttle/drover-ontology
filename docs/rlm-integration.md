@@ -17,7 +17,9 @@ drover-ontology already provides exactly the hardened "governed runtime" that a 
 - "All agents write through the Go binary" rule (CRITICAL — see SKILL.md)
 - PBT regression guards and E2E tests
 
-**Do not** introduce a parallel graph database (KektorDB, LadybugDB, gonum, etc.). The research thread examples that did so were written before we completed the deletion of the dead parallel `internal/ontology/graph.go` (~780 LOC) and the consolidation of mutation semantics. RLM is an **ingestion / builder layer** that targets the existing drover store.
+**Do not** introduce a second *ontology mutation authority* or parallel ontology graph store inside this repo (the research-thread examples that did so were written before we deleted the dead parallel `internal/ontology/graph.go` (~780 LOC) and consolidated mutation semantics). RLM is an **ingestion / builder layer** that targets the existing governed JSONL/reducer store.
+
+**Scope clarification (rationalization 2026-11-09):** [LadybugDB](https://ladybugdb.com) on Unikraft Cloud Sydney is **Brain's** approved *graph projection / retrieval* backend (replacing Brain's legacy Apache AGE adapter). It is **not** an uncontrolled parallel ontology and must not become a second place to mutate Terms/Relations. Ontology remains the governed schema/reducer/JSONL mutation authority; Brain's LadybugDB graph is a retrieval projection over company Git RAG. Escalate any genuinely conflicting ownership decision rather than global text replacement.
 
 ## High-Level Process (Exactly What Happens When You Point It at a Codebase)
 

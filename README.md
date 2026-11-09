@@ -1,5 +1,7 @@
 # drover-ontology
 
+> **Repo status (rationalization 2026-11-09):** STALE — HEAD 2026-06-03. Next: reconcile governed JSONL-store boundary with Brain's LadybugDB graph projection; do not create two mutation authorities. See `docs/rlm-integration.md`.
+
 > **⚠️ CRITICAL RULE**
 >
 > **Use the native Go binary (`ontology` or the `drover-ont` wrapper inside the monorepo).**
