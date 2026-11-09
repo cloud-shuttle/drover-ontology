@@ -14,7 +14,7 @@ require (
 require (
 	github.com/XiaoConstantine/rlm-go v0.1.0 // for rlm integration spike (use -tags rlm to build the real harness; pulls Yaegi etc.)
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
-	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/buger/jsonparser v1.1.2 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
