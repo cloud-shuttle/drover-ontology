@@ -12,6 +12,9 @@ on:
     # Weekly deep run on Monday at 06:00 UTC
     - cron: '0 6 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   generative:
     name: Bounded Generative Tests
