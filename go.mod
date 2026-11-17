@@ -1,4 +1,4 @@
-module github.com/drover-org/drover-ontology
+module github.com/cloud-shuttle/drover-ontology
 
 go 1.26.0
 

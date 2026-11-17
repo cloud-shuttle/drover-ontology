@@ -43,14 +43,14 @@ Traditional AI agents quickly hit context limit walls, generate stale documentat
 You can install the `ontology` CLI tool globally on your system using Go:
 
 ```bash
-go install github.com/drover-org/drover-ontology/cmd/ontology@latest
+go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest
 ```
 
 ### Alternatively: Build and install from source
 
 ```bash
 # Clone the repository and build from source
-git clone https://github.com/drover-org/drover-ontology.git
+git clone https://github.com/cloud-shuttle/drover-ontology.git
 cd drover-ontology
 
 # Installs to ~/.local/bin (no sudo required)

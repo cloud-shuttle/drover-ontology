@@ -26,13 +26,13 @@ runs:
         # If we have the source code available locally in the workspace, compile it directly
         if [ -d "../drover-ontology" ]; then
           echo "Found local drover-ontology source in parent directory. Building..."
-          cd ../drover-ontology && go build -o $HOME/.local/bin/ontology github.com/drover-org/drover-ontology/cmd/ontology
+          cd ../drover-ontology && go build -o $HOME/.local/bin/ontology github.com/cloud-shuttle/drover-ontology/cmd/ontology
         elif [ -f "go.mod" ] && grep -q "drover-ontology" go.mod; then
           echo "Found local drover-ontology source in current directory. Building..."
-          go build -o $HOME/.local/bin/ontology github.com/drover-org/drover-ontology/cmd/ontology
+          go build -o $HOME/.local/bin/ontology github.com/cloud-shuttle/drover-ontology/cmd/ontology
         else
           echo "Downloading and installing drover-ontology CLI..."
-          go install github.com/drover-org/drover-ontology/cmd/ontology@latest
+          go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest
         fi
 
     - name: Run Schema Validation

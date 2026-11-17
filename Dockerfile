@@ -13,8 +13,8 @@ RUN go mod download
 COPY . .
 
 # Compile optimized static binaries
-RUN go build -ldflags "-s -w" -o bin/ontology github.com/drover-org/drover-ontology/cmd/ontology && \
-    go build -tags rlm -ldflags "-s -w" -o bin/rlm-ontology github.com/drover-org/drover-ontology/tools/rlm-ontology
+RUN go build -ldflags "-s -w" -o bin/ontology github.com/cloud-shuttle/drover-ontology/cmd/ontology && \
+    go build -tags rlm -ldflags "-s -w" -o bin/rlm-ontology github.com/cloud-shuttle/drover-ontology/tools/rlm-ontology
 
 # --- Stage 2: Distribute the compiled runtime ---
 FROM alpine:3.19

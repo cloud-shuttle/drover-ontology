@@ -1,7 +1,7 @@
 # drover-ontology Makefile
 
 BINARY_NAME := ontology
-PKG := github.com/drover-org/drover-ontology/cmd/ontology
+PKG := github.com/cloud-shuttle/drover-ontology/cmd/ontology
 BUILD_DIR := bin
 
 # Default target
@@ -13,14 +13,14 @@ all: build
 build:
 	@mkdir -p $(BUILD_DIR)
 	go build -ldflags "-s -w" -o $(BUILD_DIR)/$(BINARY_NAME) $(PKG)
-	go build -tags rlm -ldflags "-s -w" -o $(BUILD_DIR)/rlm-ontology github.com/drover-org/drover-ontology/tools/rlm-ontology
+	go build -tags rlm -ldflags "-s -w" -o $(BUILD_DIR)/rlm-ontology github.com/cloud-shuttle/drover-ontology/tools/rlm-ontology
 	@echo "Built $(BUILD_DIR)/$(BINARY_NAME) and $(BUILD_DIR)/rlm-ontology"
 
 # Install using Go's standard mechanism (respects $GOBIN / $GOPATH/bin)
 .PHONY: install
 install:
 	go install -ldflags "-s -w" $(PKG)
-	go install -tags rlm -ldflags "-s -w" github.com/drover-org/drover-ontology/tools/rlm-ontology
+	go install -tags rlm -ldflags "-s -w" github.com/cloud-shuttle/drover-ontology/tools/rlm-ontology
 	@echo "Installed 'ontology' and 'rlm-ontology' via go install"
 	@echo "Make sure $$GOPATH/bin or $$GOBIN is in your PATH"
 
@@ -29,7 +29,7 @@ install:
 install-local:
 	@mkdir -p $(HOME)/.local/bin
 	go build -ldflags "-s -w" -o $(HOME)/.local/bin/$(BINARY_NAME) $(PKG)
-	go build -tags rlm -ldflags "-s -w" -o $(HOME)/.local/bin/rlm-ontology github.com/drover-org/drover-ontology/tools/rlm-ontology
+	go build -tags rlm -ldflags "-s -w" -o $(HOME)/.local/bin/rlm-ontology github.com/cloud-shuttle/drover-ontology/tools/rlm-ontology
 	@echo "Installed to $(HOME)/.local/bin/ontology and $(HOME)/.local/bin/rlm-ontology"
 	@echo "Make sure ~/.local/bin is in your PATH (add to ~/.zshrc or ~/.bash_profile if needed):"
 	@echo '  export PATH="$$HOME/.local/bin:$$PATH"'
@@ -38,7 +38,7 @@ install-local:
 .PHONY: install-system
 install-system:
 	go build -ldflags "-s -w" -o /usr/local/bin/$(BINARY_NAME) $(PKG)
-	go build -tags rlm -ldflags "-s -w" -o /usr/local/bin/rlm-ontology github.com/drover-org/drover-ontology/tools/rlm-ontology
+	go build -tags rlm -ldflags "-s -w" -o /usr/local/bin/rlm-ontology github.com/cloud-shuttle/drover-ontology/tools/rlm-ontology
 	@echo "Installed to /usr/local/bin/ontology and /usr/local/bin/rlm-ontology"
 
 # Development build (with debug info)
