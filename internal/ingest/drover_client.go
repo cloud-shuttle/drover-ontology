@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/drover-org/drover-ontology/internal/ontology"
+	"github.com/cloud-shuttle/drover-ontology/internal/ontology"
 )
 
 // DroverClient is the bridge that an RLM (or any automated ingester) uses to

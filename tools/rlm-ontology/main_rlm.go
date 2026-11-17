@@ -40,8 +40,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/drover-org/drover-ontology/internal/ingest"
-	"github.com/drover-org/drover-ontology/internal/ontology"
+	"github.com/cloud-shuttle/drover-ontology/internal/ingest"
+	"github.com/cloud-shuttle/drover-ontology/internal/ontology"
 
 	"github.com/XiaoConstantine/rlm-go/pkg/parsing"
 	"github.com/traefik/yaegi/interp"

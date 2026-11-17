@@ -1,10 +1,10 @@
 # drover-ontology
 
-![Status: stale](https://img.shields.io/badge/status-stale-d29922)
+![Status: active](https://img.shields.io/badge/status-active-2ea44f)
 
-> **Status, checked 18 Nov 2026: STALE.** Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 3 Jun 2026. Outside the gap program.
+> **Status, checked 18 Nov 2026: ACTIVE.** Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 18 Nov 2026 (#11, module path). Feature work last changed 3 Jun 2026. Outside the gap program.
 >
-> **Clean-clone check:** `go build ./...` and `go test -short ./...` pass. `go install github.com/drover-org/...` does not work because the module path points at an org that does not exist (tracked as an M0 issue).
+> **Clean-clone check:** `go build ./...` and `go test -short ./...` pass. `go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest` matches `go.mod`.
 >
 > **Roadmap:** [ROADMAP.md](ROADMAP.md). Program tracking: Drover gap program (M0 to M4).
 
@@ -44,11 +44,13 @@ Traditional AI agents quickly hit context limit walls, generate stale documentat
 
 ## Installation
 
-### `go install` does not work yet
+### Recommended: Install globally via Go
 
-The module path in `go.mod` is `github.com/drover-org/drover-ontology`, and the `drover-org` GitHub org does not exist, so `go install github.com/drover-org/drover-ontology/cmd/ontology@latest` fails. Fixing the module path is an M0 issue. Until then, build from source.
+```bash
+go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest
+```
 
-### Build and install from source
+### Alternatively: Build and install from source
 
 ```bash
 # Clone the repository and build from source

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/drover-org/drover-ontology/internal/ontology"
+	"github.com/cloud-shuttle/drover-ontology/internal/ontology"
 )
 
 func TestExportFormats(t *testing.T) {

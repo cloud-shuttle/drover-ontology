@@ -1,6 +1,6 @@
 # drover-ontology roadmap
 
-Last updated 18 Nov 2026. Status: **STALE**. Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 3 Jun 2026. Outside the gap program.
+Last updated 18 Nov 2026. Status: **ACTIVE**. Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 18 Nov 2026 (#11, module path). Feature work last changed 3 Jun 2026. Outside the gap program.
 
 ## The Drover gap program
 
@@ -19,11 +19,11 @@ Program tracking issue: in [cloud-shuttle/drover-cloud](https://github.com/cloud
 
 ## This repo in the program
 
-Outside the gap program apart from the M0 module-path fix.
+Outside the gap program. The M0 module-path fix landed in #11.
 
 ### M0 Truth-up (due 27 Nov 2026)
 
-- [Fix Go module path: github.com/drover-org/drover-ontology does not resolve](https://github.com/cloud-shuttle/drover-ontology/issues/9)
+- [x] [Fix Go module path: github.com/drover-org/drover-ontology does not resolve](https://github.com/cloud-shuttle/drover-ontology/issues/9) — done in #11. The module path is `github.com/cloud-shuttle/drover-ontology`.
 
 Each item is a GitHub issue labelled `roadmap` with a `gap:*` label and a milestone: [roadmap issues in this repo](https://github.com/cloud-shuttle/drover-ontology/issues?q=is%3Aissue+label%3Aroadmap).
 
