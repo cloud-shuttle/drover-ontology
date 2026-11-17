@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/drover-org/drover-ontology/commands"
+	"github.com/cloud-shuttle/drover-ontology/commands"
 )
 
 func main() {

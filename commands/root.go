@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/drover-org/drover-ontology/internal/ontology"
+	"github.com/cloud-shuttle/drover-ontology/internal/ontology"
 	"github.com/spf13/cobra"
 )
 
