@@ -24,7 +24,7 @@ The CLI uses symbol scans to map classes, functions, structs, and configuration 
 
 ### How the Symbol Parser Works
 
-All symbol scanning delegates to the `ParseFileSymbols(relPath string)` method on `CodeAnalysis` inside [internal/ingest/code_analysis.go](file:///Users/peterhanssens/consulting/drover-org/drover-ontology/internal/ingest/code_analysis.go):
+All symbol scanning delegates to the `ParseFileSymbols(relPath string)` method on `CodeAnalysis` inside [internal/ingest/code_analysis.go](internal/ingest/code_analysis.go):
 
 1. **Go (`.go`)**: Parses structural symbols natively using Go’s AST standard libraries (`go/parser` and `go/ast`).
 2. **JavaScript / TypeScript (`.js`, `.jsx`, `.ts`, `.tsx`)**: Uses a lightweight brace-matching recursive scanner (`findBlockEnd`) to calculate accurate block spans for functions and classes.
@@ -52,7 +52,7 @@ Write a parsing helper function `parseRustSymbols(content string) (string, error
 - Format and return a structured text log detailing extracted symbols and their ranges.
 
 #### Step 3: Add Unit Tests
-Add a test case in [internal/ingest/code_analysis_test.go](file:///Users/peterhanssens/consulting/drover-org/drover-ontology/internal/ingest/code_analysis_test.go) asserting correct symbol discovery and exact line ranges. For example:
+Add a test case in [internal/ingest/code_analysis_test.go](internal/ingest/code_analysis_test.go) asserting correct symbol discovery and exact line ranges. For example:
 
 ```go
 func TestParseRustSymbols(t *testing.T) {

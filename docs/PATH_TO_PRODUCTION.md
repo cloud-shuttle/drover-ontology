@@ -250,7 +250,7 @@ A system is considered production-ready for agent/tooling use when:
 - Update this document after each phase.
 - Link completed items back to PRs or commits.
 - Track all work as small, actionable beads in [beads.json](/beads.json) (with acceptance criteria).
-- Maintain a living "Production Readiness Scorecard" → [docs/PRODUCTION_READINESS_SCORECARD.md](docs/PRODUCTION_READINESS_SCORECARD.md)
+- Maintain a living "Production Readiness Scorecard" → [docs/PRODUCTION_READINESS_SCORECARD.md](PRODUCTION_READINESS_SCORECARD.md)
 
 ---
 

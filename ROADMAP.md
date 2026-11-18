@@ -1,0 +1,40 @@
+# drover-ontology roadmap
+
+Last updated 18 Nov 2026. Status: **ACTIVE**. Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 18 Nov 2026 (#11, module path). Feature work last changed 3 Jun 2026. Outside the gap program.
+
+## The Drover gap program
+
+In November 2026 Drover was compared with Vercel eve 1.0. Drover leads on isolation, the model gateway and governance, and trails on the layer people touch. The program closes five gaps across the repos: durable multi-turn sessions (drover-kelpies), a Slack-first channels layer (drover-cloud), unified OpenTelemetry tracing with a run viewer (drover-libs, Cloud console), a TypeScript client SDK (drover-cloud), and an extension bundle format (drover-muster, drover-registry). Four capabilities are deferred to Later: shared multi-person sessions, ambient channel listening, agents editing their own code, and session prewarm and migration.
+
+Program tracking issue: in [cloud-shuttle/drover-cloud](https://github.com/cloud-shuttle/drover-cloud/issues?q=is%3Aissue+label%3Aroadmap+Tracking) (private). Sessions run on DBOS, not Temporal (ADR 0005 in drover-kelpies). Dates and day counts are estimates.
+
+| Milestone | Due (estimate) |
+|---|---|
+| M0 Truth-up | 27 Nov 2026 |
+| M1 Trace spine | 18 Dec 2026 |
+| M2 Durable sessions | 5 Feb 2027 |
+| M3 Channels and SDK | 5 Mar 2027 |
+| M4 Extensions | 2 Apr 2027 |
+| Later | after M4 |
+
+## This repo in the program
+
+Outside the gap program. The M0 module-path fix landed in #11.
+
+### M0 Truth-up (due 27 Nov 2026)
+
+- [x] [Fix Go module path: github.com/drover-org/drover-ontology does not resolve](https://github.com/cloud-shuttle/drover-ontology/issues/9) — done in #11. The module path is `github.com/cloud-shuttle/drover-ontology`.
+
+Each item is a GitHub issue labelled `roadmap` with a `gap:*` label and a milestone: [roadmap issues in this repo](https://github.com/cloud-shuttle/drover-ontology/issues?q=is%3Aissue+label%3Aroadmap).
+
+## Existing roadmap epics
+
+These predate the gap program and stay open:
+
+- [#8 Epic: Roadmap ideas: MCP server and sync adapters](https://github.com/cloud-shuttle/drover-ontology/issues/8)
+- [#7 Epic: Brain graph boundary reconciliation](https://github.com/cloud-shuttle/drover-ontology/issues/7)
+- [#6 Epic: Path to production Phase 2–3](https://github.com/cloud-shuttle/drover-ontology/issues/6)
+
+## How this file is kept current
+
+Update this file in the same PR that closes a roadmap issue or moves a milestone. Status words used across Drover: ACTIVE (code changed in the last 60 days), STALE (no code change for 61 to 180 days), PROTOTYPE (experimental or scaffold), SUPERSEDED (replaced by another repo).

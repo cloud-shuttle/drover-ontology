@@ -1,6 +1,12 @@
 # drover-ontology
 
-> **Repo status (rationalization 2026-11-09):** STALE — HEAD 2026-06-03. Next: reconcile governed JSONL-store boundary with Brain's LadybugDB graph projection; do not create two mutation authorities. See `docs/rlm-integration.md`.
+![Status: active](https://img.shields.io/badge/status-active-2ea44f)
+
+> **Status, checked 18 Nov 2026: ACTIVE.** Governed ontology CLI (`ontology`) with a JSONL reducer. Tagged v0.1.0. Last code change 18 Nov 2026 (#11, module path). Feature work last changed 3 Jun 2026. Outside the gap program.
+>
+> **Clean-clone check:** `go build ./...` and `go test -short ./...` pass. `go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest` matches `go.mod`.
+>
+> **Roadmap:** [ROADMAP.md](ROADMAP.md). Program tracking: Drover gap program (M0 to M4).
 
 > **⚠️ CRITICAL RULE**
 >
@@ -39,8 +45,6 @@ Traditional AI agents quickly hit context limit walls, generate stale documentat
 ## Installation
 
 ### Recommended: Install globally via Go
-
-You can install the `ontology` CLI tool globally on your system using Go:
 
 ```bash
 go install github.com/cloud-shuttle/drover-ontology/cmd/ontology@latest
@@ -155,7 +159,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify Schema Compliance
-        uses: drover-org/drover-ontology/.github/actions/ontology-validator@main
+        uses: cloud-shuttle/drover-ontology/.github/actions/ontology-validator@main
 ```
 
 This action compiles the CLI, executes policy verification, parses local Git diff boundaries, and prints Github PR workflow warnings if developer commits violate standard schema rules.
